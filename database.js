@@ -55,19 +55,19 @@ module.exports = {
         )
     },
     isUserExist: async(user) => {
-        let author = await db.all("SELECT * FROM userWHERE login = ?", [user])
+        let author = await db.all("SELECT * FROM user WHERE login = ?", [user])
         return author.length
     },
     addUser: async (user) => {
         let salt = crypto.randomBytes(16).toString("hex")
         let passCipher = crypto.pbkdf2Sync(user.password, salt, 1000, 100, "sha512").toString("hex")
         await db.run(
-            `INSERT INTO user (login, password, salt) VALUES (?, ?, ?)`
+            `INSERT INTO user (login, password, salt) VALUES (?, ?, ?)`,
             [user.login, passCipher, salt]
         )
     },
     getAuthToken: async (user) => {
-        let author = await db.all("SELECT * FROM userWHERE login = ?", [user.login])
+        let author = await db.all("SELECT * FROM user WHERE login = ?", [user.login])
         if (!author.length) {
             throw "Incorrect login"
         }
